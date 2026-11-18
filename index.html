@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0c0d" />
+  <meta name="description" content="Centro privado de herramientas para tu servidor Plex en Synology." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Plex Tools" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=1.0.0" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" defer></script>
+  <!-- Se reutiliza la configuracion publica del proyecto IP Pulse existente. -->
+  <script src="../ip-pulse/config.js" defer></script>
+  <script src="app.js?v=1.0.0" defer></script>
+</head>
+<body>
+  <div class="ambient ambient-a" aria-hidden="true"></div>
+  <div class="ambient ambient-b" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="container">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Plex Tools inicio">
+        <span class="brand-symbol"><span class="brand-chevron"></span></span>
+        <span class="brand-text">PLEX<span>TOOLS</span><small>YOUR MEDIA COMMAND CENTER</small></span>
+      </a>
+      <div class="topbar-actions">
+        <span class="connection-label" id="connection-label"><span class="indicator"></span><span id="connection-text">Conectando</span></span>
+        <button class="button-icon hidden" id="sign-out" aria-label="Cerrar sesión" title="Cerrar sesión">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17l5-5-5-5M15 12H3M12 3h6a2 2 0 012 2v14a2 2 0 01-2 2h-6" /></svg>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="login-page" id="login-section">
+        <div class="login-visual" aria-hidden="true">
+          <span class="circle circle-1"></span><span class="circle circle-2"></span><span class="circle circle-3"></span>
+          <div class="play-glyph"><span></span></div>
+        </div>
+        <div class="login-card">
+          <div class="eyebrow"><span class="mini-line"></span> ACCESO PRIVADO</div>
+          <h1>Tu universo Plex.<br><em>Todo conectado.</em></h1>
+          <p>Accede a tus herramientas desde un solo lugar. Utiliza las mismas credenciales de IP Pulse.</p>
+          <form id="login-form">
+            <label for="email">Correo electrónico</label>
+            <input id="email" type="email" autocomplete="email" placeholder="correo@ejemplo.com" required />
+            <label for="password">Contraseña</label>
+            <input id="password" type="password" autocomplete="current-password" placeholder="Tu contraseña" required />
+            <button class="btn btn-primary full" type="submit" id="login-button">Entrar a Plex Tools <span aria-hidden="true">↗</span></button>
+            <p class="form-message" id="login-message" role="alert"></p>
+          </form>
+        </div>
+      </section>
+
+      <section class="dashboard hidden" id="dashboard">
+        <div class="eyebrow top-eyebrow"><span class="mini-line"></span> TU CENTRO DE CONTROL</div>
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <div class="hero-tag"><span class="hero-dot"></span> SYNOLOGY DS220+ <span class="tag-separator">/</span> PLEX ECOSYSTEM</div>
+            <h1 id="hero-title">Todo tu cine.<br><em>Un solo lugar.</em></h1>
+            <p>Tus herramientas de Plex, organizadas y disponibles desde un único punto de acceso.</p>
+            <div class="hero-meta"><span><span class="diamond"></span> PLATAFORMA PRIVADA</span><span class="meta-separator"></span><span>CONEXIÓN INTELIGENTE</span></div>
+          </div>
+          <div class="hero-art" aria-hidden="true"><span class="orbit orbit-a"></span><span class="orbit orbit-b"></span><span class="orbit orbit-c"></span><span class="hero-emblem"><span></span></span></div>
+        </section>
+
+        <section class="section" aria-labelledby="apps-title">
+          <div class="section-heading">
+            <div><span class="section-kicker">01 / HERRAMIENTAS</span><h2 id="apps-title">Tus aplicaciones</h2></div>
+            <span class="section-side"><span class="small-pulse"></span> ENLAZADAS AL NAS</span>
+          </div>
+          <div class="apps-grid">
+            <article class="app-card analytics-card">
+              <div class="card-glow" aria-hidden="true"></div>
+              <div class="card-upper">
+                <span class="app-icon analytics-icon" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 26V16M11 26V9M18 26V19M25 26V5"/><path d="M2 29h28"/></svg>
+                </span>
+                <span class="app-badge" id="app-badge">VERIFICANDO NAS</span>
+              </div>
+              <div class="app-copy"><span class="card-kicker">ANÁLISIS DE BIBLIOTECA</span><h3>Plex Analytics</h3><p>Estadísticas de películas, subtítulos, formatos, almacenamiento y exploración de tu colección.</p></div>
+              <div class="card-footer"><button id="open-analytics" class="btn btn-primary open-dashboard" type="button" disabled><span id="open-label">Buscando NAS...</span><span class="button-arrow" aria-hidden="true">↗</span></button></div>
+            </article>
+            <article class="app-card library-card">
+              <div class="card-upper"><span class="app-icon library-icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="22" height="22" rx="4"/><path d="m14 11 9 5-9 5z"/></svg>
+              </span><span class="soon-badge">PRÓXIMAMENTE</span></div>
+              <div class="app-copy"><span class="card-kicker">CATÁLOGO FAMILIAR</span><h3>Plex Library</h3><p>Buscador de películas y solicitudes familiares con pósters, sin abrir Plex.</p></div>
+              <div class="card-footer"><span class="future-caption">EN DESARROLLO <span>✳</span></span></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section nas-section" aria-labelledby="nas-title">
+          <div class="section-heading"><div><span class="section-kicker">02 / CONEXIÓN</span><h2 id="nas-title">Estado del servidor</h2></div><button type="button" class="refresh-btn" id="refresh-button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-15.2 6.5L3 16m0 0v5m0-5h5M3 12a9 9 0 0 1 15.2-6.5L21 8m0 0V3m0 5h-5"/></svg> Actualizar</button></div>
+          <div class="server-panel">
+            <div class="server-identity"><span class="server-icon"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="20" height="24" rx="3"/><path d="M11 10h10M11 16h10"/><circle cx="20.5" cy="22" r="1.5"/></svg></span><div><strong>NAS Synology</strong><small id="nas-device-name">Buscando dispositivo...</small></div></div>
+            <div class="server-metric"><span>ESTADO</span><strong class="server-state checking" id="nas-status"><i></i> VERIFICANDO</strong></div>
+            <div class="server-metric"><span>IP LOCAL ACTUAL</span><strong class="mono" id="nas-ip">—</strong></div>
+            <div class="server-metric"><span>ÚLTIMA SEÑAL</span><strong id="nas-last-seen">—</strong></div>
+          </div>
+          <p class="connection-info" id="connection-info">Consultando la IP privada del NAS en Supabase...</p>
+        </section>
+
+        <footer><div><span class="footer-mark">▶</span> PLEX TOOLS <span class="footer-muted">/ TU SERVIDOR, TUS REGLAS</span></div><small>El acceso a Plex Analytics requiere conexión a la red local del NAS.</small></footer>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
