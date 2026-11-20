@@ -1,6 +1,6 @@
 # TravelSpend — San Diego
 
-Dashboard móvil de gastos en **USD**, sin presupuestos iniciales. Añade, edita o elimina compras y devoluciones, consulta total neto, movimientos diarios, categorías, comercios y medios de pago. Exporta CSV o JSON y prueba la lectura de tickets con la cámara.
+Dashboard móvil de gastos en **USD**, sin presupuestos iniciales. Añade, edita o elimina compras y devoluciones, consulta total neto, movimientos diarios, categorías, comercios y medios de pago. Exporta CSV o JSON, lee tickets con la cámara y consulta automáticamente el tipo de cambio USD/MXN si habilitas esa opción.
 
 ## Abrir en el iPhone
 
@@ -35,9 +35,13 @@ window.TRAVELSPEND_FIREBASE_CONFIG = {
 7. Abre de nuevo la app e inicia sesión. Revisa el banner **Nube conectada** y prueba un registro. Los usuarios autenticados solo acceden a su propia colección de movimientos; las reglas de Firestore son esenciales. El objeto `firebaseConfig` es un identificador público de cliente, no una contraseña.
 8. Si ya tenías datos locales, en **Ajustes** aparecerá el botón **Subir gastos locales a la nube**. Comprueba que la sincronización terminó y exporta otro JSON.
 
+## Conversión USD a MXN, sin captura manual
+
+En **Ajustes → Conversión automática a MXN** activa **Mostrar equivalentes en pesos (MXN)**. TravelSpend consulta https://api.frankfurter.dev/v2/rate/usd/mxn (Frankfurter, sin clave), muestra la fecha y el tipo de cambio y actualiza los equivalentes del total en MXN automáticamente; refresca al menos cada seis horas mientras se abra la web y permite forzar la actualización. Conserva la última cotización en el dispositivo para mostrar una estimación si no hay conexión; indica que puede estar desactualizada. No pide que captures el tipo de cambio. Las transacciones siguen guardándose en USD, y el equivalente es una referencia, no el monto exacto que cobrará tu tarjeta, ni considera comisiones, márgenes ni tipo de cambio bancario.
+
 ## Cámara / OCR
 
-El botón **Escanear ticket** utiliza Tesseract.js en el navegador, descargado cuando se necesita. Se procesa la imagen en el dispositivo y **no se guarda la foto**. El comercio y el total pueden detectarse incorrectamente: siempre verifica los campos antes de guardar.
+Los botones **Tomar foto del ticket** y **Elegir foto** utilizan Tesseract.js en el navegador, descargado cuando se necesita. Se procesa la imagen en el dispositivo y **no se guarda la foto**. El comercio y el total pueden detectarse incorrectamente: siempre verifica los campos antes de guardar.
 
 ## Exportaciones
 
