@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f5f7f7">
+  <meta name="description" content="Balance compartido: cargos, abonos y saldo neto en un solo lugar.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Balance">
+  <title>Balance compartido · Movimientos</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css?v=1">
+  <script src="app.js?v=1" defer></script>
+</head>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <div class="brand" aria-label="Balance compartido">
+        <span class="brand-symbol" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M7 10h18m0 0-5-5m5 5-5 5M25 22H7m0 0 5-5m-5 5 5 5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="brand-copy"><strong>balance<span class="brand-dot">.</span></strong><small>COMPARTIDO</small></span>
+      </div>
+      <div class="nav-actions">
+        <span class="live-indicator"><span></span> Consulta compartida</span>
+        <button type="button" id="refreshBtn" class="icon-btn" aria-label="Actualizar movimientos" title="Actualizar movimientos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M20 11a8 8 0 1 0-2.5 6M20 4v7h-7"/></svg></button>
+        <button type="button" id="adminBtn" class="btn btn-subtle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span id="adminBtnText">Administrar</span></button>
+      </div>
+    </header>
+    <main>
+      <section class="heading-row">
+        <div><p class="eyebrow"><span class="eyebrow-line"></span> CUENTAS CLARAS</p><h1>Todo en orden,<br><span>en un solo lugar.</span></h1><p class="intro">Un registro transparente de los cargos y abonos. Sin confusiones, con cada movimiento a la vista.</p></div>
+        <div class="report-date"><span>ESTADO DE CUENTA</span><strong id="todayLabel">—</strong><small id="updatedLabel">Consultando movimientos…</small></div>
+      </section>
+      <section class="overview" aria-label="Resumen de saldo">
+        <article class="balance-card">
+          <div class="balance-bg" aria-hidden="true"></div>
+          <div class="balance-content">
+            <div class="balance-top"><span class="balance-heading"><span class="round-spark">✦</span> BALANCE ACTUAL</span><span id="balancePill" class="balance-pill">Consultando</span></div>
+            <div class="balance-middle"><p id="balanceLabel">Saldo neto</p><strong id="balanceAmount" class="balance-amount" aria-live="polite">—</strong><span id="balanceExplanation" class="balance-explanation">Cargando información…</span></div>
+            <div class="balance-bottom"><span>Todos los importes en pesos mexicanos (MXN)</span><span class="sparkline" aria-hidden="true">✳</span></div>
+          </div>
+        </article>
+        <div class="totals-column">
+          <article class="total-card charge"><div class="total-icon" aria-hidden="true">↗</div><div><p>Total de cargos</p><strong id="chargeTotal">—</strong><small>Incrementan el saldo</small></div></article>
+          <article class="total-card payment"><div class="total-icon" aria-hidden="true">↙</div><div><p>Total de abonos</p><strong id="paymentTotal">—</strong><small>Disminuyen el saldo</small></div></article>
+        </div>
+      </section>
+      <section class="movements-section" aria-labelledby="movementsHeading">
+        <div class="section-head">
+          <div><div class="section-kicker">DETALLE DE MOVIMIENTOS</div><h2 id="movementsHeading">Historial <span id="movementCount" class="count-pill">0</span></h2><p class="section-description">Cada cargo y cada abono, ordenados por fecha.</p></div>
+          <div class="section-actions"><button class="btn btn-outline" type="button" id="exportBtn">↓ <span>Exportar CSV</span></button><button class="btn btn-primary admin-only" type="button" id="addBtn" hidden>＋ Nuevo movimiento</button></div>
+        </div>
+        <div class="history-panel">
+          <div class="toolbar">
+            <div class="filters" role="group" aria-label="Filtrar movimientos"><button type="button" class="filter active" data-filter="all" aria-pressed="true">Todos</button><button type="button" class="filter" data-filter="charge" aria-pressed="false">Cargos</button><button type="button" class="filter" data-filter="payment" aria-pressed="false">Abonos</button></div>
+            <label class="search-field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="searchInput" type="search" placeholder="Buscar concepto" aria-label="Buscar por concepto o nota" maxlength="120" autocomplete="off"></label>
+          </div>
+          <div id="loadError" class="notice notice-error" role="alert" hidden>No se pudo cargar el registro. Comprueba tu conexión y vuelve a intentar.</div>
+          <div class="table-scroll"><table class="movement-table"><thead><tr><th>CONCEPTO</th><th>FECHA</th><th>TIPO</th><th class="align-right">IMPORTE</th><th class="actions-heading admin-only" hidden>GESTIÓN</th></tr></thead><tbody id="movementTable"><tr><td colspan="5" class="loading-cell">Cargando movimientos…</td></tr></tbody></table></div>
+          <div id="emptyState" class="empty-state" hidden><div class="empty-illustration">≋</div><h3 id="emptyTitle">Todavía no hay movimientos</h3><p id="emptyDescription">Cuando se agreguen cargos o abonos, aparecerán aquí.</p></div>
+          <footer class="history-footer"><span id="shownCount">—</span><span>Registro compartido • Solo lectura para visitantes</span></footer>
+        </div>
+      </section>
+      <div class="info-strip"><div class="info-symbol">i</div><div><strong>¿Cómo se calcula el saldo?</strong><p>Los cargos aumentan la cantidad pendiente; los abonos la reducen. Si el resultado es negativo, el saldo está a favor de la otra parte.</p></div></div>
+    </main>
+    <footer class="page-footer"><span>balance<span class="brand-dot">.</span> <span>Un registro, cuentas claras.</span></span><span id="footerUpdate">Actualización pendiente</span></footer>
+  </div>
+
+  <dialog id="accessDialog" class="modal" aria-labelledby="accessTitle">
+    <form method="dialog" class="modal-layout" id="accessForm">
+      <div class="modal-head"><div class="modal-icon">♢</div><button class="close-btn" type="button" data-close="accessDialog" aria-label="Cerrar">×</button></div>
+      <p class="modal-kicker">ACCESO PERSONAL</p><h2 id="accessTitle">Modo administración</h2><p class="modal-subtitle">Los visitantes solo pueden consultar. Para añadir o cambiar movimientos, introduce tu token personal de GitHub.</p>
+      <label class="field"><span>Token de acceso</span><input id="tokenInput" type="password" placeholder="github_pat_…" autocomplete="off" autocapitalize="off" spellcheck="false" required></label>
+      <div class="secure-note"><span>♧</span><p>Tu token se usa únicamente para conectar con GitHub. No se guarda en esta página ni en tu dispositivo; tendrás que introducirlo al volver a entrar.</p></div>
+      <div id="accessError" class="inline-error" role="alert" hidden></div>
+      <button type="submit" id="accessSubmit" class="btn btn-primary full-width">Entrar a administrar</button>
+      <a class="help-link" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Crear un token de acceso de GitHub ↗</a>
+    </form>
+  </dialog>
+
+  <dialog id="movementDialog" class="modal" aria-labelledby="movementTitle">
+    <form id="movementForm" class="modal-layout">
+      <div class="modal-head"><div class="modal-icon">＋</div><button class="close-btn" type="button" data-close="movementDialog" aria-label="Cerrar">×</button></div>
+      <p class="modal-kicker">REGISTRO DE MOVIMIENTO</p><h2 id="movementTitle">Nuevo movimiento</h2><p class="modal-subtitle">Registra un cargo que aumente el saldo o un abono que lo disminuya.</p>
+      <div class="movement-type-picker" role="group" aria-label="Tipo de movimiento"><label class="type-option charge-option"><input name="type" type="radio" value="charge" checked><span>↗ &nbsp; Cargo</span></label><label class="type-option payment-option"><input name="type" type="radio" value="payment"><span>↙ &nbsp; Abono</span></label></div>
+      <div class="fields-grid"><label class="field"><span>Cantidad (MXN)</span><input id="amountInput" name="amount" type="number" min="0.01" max="999999999" step="0.01" inputmode="decimal" placeholder="0.00" required></label><label class="field"><span>Fecha</span><input id="dateInput" name="date" type="date" required></label></div>
+      <label class="field"><span>Concepto</span><input id="conceptInput" name="concept" type="text" maxlength="120" placeholder="Ej. Pago de colegiatura" required></label>
+      <label class="field"><span>Nota <em>(opcional)</em></span><textarea id="noteInput" name="note" rows="2" maxlength="300" placeholder="Algún detalle útil del movimiento…"></textarea></label>
+      <div id="movementError" class="inline-error" role="alert" hidden></div>
+      <div class="form-buttons"><button type="button" class="btn btn-outline" data-close="movementDialog">Cancelar</button><button type="submit" id="saveBtn" class="btn btn-primary">Guardar movimiento</button></div>
+    </form>
+  </dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
