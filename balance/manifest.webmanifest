@@ -1,0 +1,18 @@
+{
+  "name": "Balance compartido",
+  "short_name": "Balance",
+  "description": "Resumen de cargos, abonos y saldo neto",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f7f7",
+  "theme_color": "#1b4f45",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
