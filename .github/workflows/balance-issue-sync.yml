@@ -1,0 +1,112 @@
+name: Balance · Guardar cargo o abono
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+
+concurrency:
+  group: balance-compartido-ledger
+  cancel-in-progress: false
+
+jobs:
+  register:
+    if: github.event.issue.user.login == 'camushellraiser' && github.event.issue.title == '[Balance] Nuevo movimiento'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validar y registrar movimiento en el JSON del Issue 1
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const inputIssue = context.payload.issue;
+            if (!inputIssue || inputIssue.user.login !== 'camushellraiser' || inputIssue.number === 1) {
+              core.setFailed('Este movimiento no tiene un autor autorizado.');
+              return;
+            }
+
+            const body = String(inputIssue.body || '').replace(/\r\n/g, '\n');
+            const field = (label) => {
+              const lines = body.split('\n');
+              const heading = '### ' + label;
+              const begin = lines.findIndex(line => line.trim() === heading);
+              if (begin < 0) throw new Error('Falta el campo: ' + label);
+              const values = [];
+              for (let i = begin + 1; i < lines.length; i++) {
+                if (lines[i].startsWith('### ')) break;
+                values.push(lines[i]);
+              }
+              return values.join('\n').trim();
+            };
+            const typeText = field('Tipo de movimiento');
+            const type = typeText === 'Cargo' ? 'charge' : typeText === 'Abono' ? 'payment' : null;
+            if (!type) throw new Error('El tipo debe ser Cargo o Abono.');
+            const amountText = field('Importe MXN').replace(/[,$\s]/g, '');
+            const amountMatch = amountText.match(/^(\d{1,9})(?:\.(\d{1,2}))?$/);
+            if (!amountMatch) throw new Error('El importe no es válido. Usa 1500.00 por ejemplo.');
+            const amountCents = Number(amountMatch[1]) * 100 + Number((amountMatch[2] || '').padEnd(2, '0'));
+            if (!Number.isSafeInteger(amountCents) || amountCents < 1 || amountCents > 99999999900) {
+              throw new Error('El importe debe ser mayor que cero.');
+            }
+            const date = field('Fecha');
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(date) ||
+                Number.isNaN(new Date(date + 'T12:00:00Z').getTime()) ||
+                new Date(date + 'T12:00:00Z').toISOString().slice(0, 10) !== date) {
+              throw new Error('La fecha debe estar en formato AAAA-MM-DD y ser válida.');
+            }
+            const concept = field('Concepto').trim();
+            let note = '';
+            try { note = field('Nota'); } catch { /* Campo opcional. */ }
+            if (/^_No response_$/i.test(note)) note = '';
+            if (!concept || concept.length > 120 || concept.includes('\n')) {
+              throw new Error('El concepto debe tener entre 1 y 120 caracteres y una sola línea.');
+            }
+            if (note.length > 300) throw new Error('La nota supera 300 caracteres.');
+
+            const register = await github.rest.issues.get({owner, repo, issue_number: 1});
+            const registerBody = register.data.body || '';
+            const marker = '<!-- BALANCE_COMPARTIDO_DATA_V1 -->';
+            const fence = String.fromCharCode(96).repeat(3);
+            if (!registerBody.includes(marker)) throw new Error('No se encontró el JSON autorizado.');
+            const open = registerBody.indexOf(fence + 'json');
+            const close = registerBody.indexOf(fence, open + 7);
+            if (open < 0 || close < 0) throw new Error('No se pudo leer el JSON del saldo.');
+            const ledger = JSON.parse(registerBody.slice(open + 7, close).trim());
+            if (ledger.schemaVersion !== 1 || !Array.isArray(ledger.movements) ||
+                !Number.isSafeInteger(ledger.revision)) {
+              throw new Error('El registro tiene un formato desconocido.');
+            }
+
+            // Un mismo formulario nunca genera dos movimientos, ni siquiera al relanzar el workflow.
+            const id = 'github-issue-' + inputIssue.number;
+            if (!ledger.movements.some(m => m.id === id)) {
+              const now = new Date().toISOString();
+              ledger.movements.push({
+                id,
+                type,
+                amountCents,
+                concept,
+                note,
+                date,
+                createdAt: inputIssue.created_at || now,
+                modifiedAt: now
+              });
+              ledger.revision += 1;
+              ledger.updatedAt = now;
+              const nextBody = marker + '\n' + fence + 'json\n' +
+                JSON.stringify(ledger, null, 2) + '\n' + fence +
+                '\n\n> Registro público del panel Balance Compartido. No incluir información bancaria, contraseñas ni datos sensibles.';
+              await github.rest.issues.update({owner, repo, issue_number: 1, body: nextBody});
+            }
+
+            await github.rest.issues.createComment({
+              owner, repo, issue_number: inputIssue.number,
+              body: '✅ Movimiento registrado en **Balance Compartido**. [Abrir el dashboard](https://camushellraiser.github.io/plex-tools/balance/) y pulsar **Actualizar** para ver el nuevo saldo.'
+            });
+            await github.rest.issues.update({
+              owner, repo, issue_number: inputIssue.number, state: 'closed', state_reason: 'completed'
+            });
