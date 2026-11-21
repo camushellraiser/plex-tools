@@ -6,14 +6,12 @@ body:
     attributes:
       value: |
         Este formulario recibe los datos del dashboard Balance Compartido. Confirma los campos y pulsa **Submit new issue**. La automatización actualizará el saldo. Solo se procesarán los formularios creados por la cuenta propietaria `camushellraiser`.
-  - type: dropdown
+  - type: input
     id: tipo
     attributes:
       label: Tipo de movimiento
-      description: Cargo aumenta el saldo; Abono lo disminuye.
-      options:
-        - Cargo
-        - Abono
+      description: Se rellena desde el dashboard: Cargo aumenta el saldo, Abono lo disminuye.
+      placeholder: "Cargo o Abono"
     validations:
       required: true
   - type: input
