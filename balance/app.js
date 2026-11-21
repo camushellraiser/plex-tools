@@ -175,7 +175,7 @@ function render() {
   byId('movementCount').textContent = String(ledger.movements.length);
   byId('updatedLabel').textContent = prettyTimestamp(ledger.updatedAt);
   byId('footerUpdate').textContent = prettyTimestamp(ledger.updatedAt);
-  byId('adminBtnText').textContent = accessToken ? 'Salir de edición' : 'Administrar';
+  byId('adminBtnText').textContent = accessToken ? 'Salir de edición' : 'Editar / borrar';
   document.querySelectorAll('.admin-only').forEach(el => { el.hidden = !accessToken; });
   byId('movementTable').classList.toggle('is-admin', !!accessToken);
   byId('loadError').hidden = true;
@@ -231,12 +231,13 @@ function closeDialog(id) {
   if (el.open) el.close();
 }
 function newMovement() {
-  if (!accessToken || !ledger) return;
+  if (!ledger) return toast('Primero carga el balance.');
   editingId = null;
   byId('movementForm').reset();
   byId('dateInput').value = dateToday();
   byId('movementTitle').textContent = 'Nuevo movimiento';
-  byId('saveBtn').textContent = 'Guardar movimiento';
+  byId('saveBtn').textContent = accessToken ? 'Guardar movimiento' : 'Continuar en GitHub';
+  byId('githubSaveHelp').hidden = Boolean(accessToken);
   byId('movementError').hidden = true;
   openDialog('movementDialog');
   byId('amountInput').focus();
@@ -253,6 +254,7 @@ function editMovement(id) {
   byId('noteInput').value = m.note || '';
   byId('movementTitle').textContent = 'Editar movimiento';
   byId('saveBtn').textContent = 'Guardar cambios';
+  byId('githubSaveHelp').hidden = true;
   byId('movementError').hidden = true;
   openDialog('movementDialog');
   byId('amountInput').focus();
@@ -291,7 +293,7 @@ function movementId() {
 }
 async function saveMovement(e) {
   e.preventDefault();
-  if (busy || !ledger || !accessToken) return;
+  if (busy || !ledger) return;
   const amount = Number(byId('amountInput').value);
   const cents = Math.round(amount * 100);
   const concept = byId('conceptInput').value.trim();
@@ -305,6 +307,21 @@ async function saveMovement(e) {
       !/^\d{4}-\d{2}-\d{2}$/.test(date) || !['charge', 'payment'].includes(type)) {
     errorEl.textContent = 'Revisa el tipo, la fecha, el concepto y el importe (debe ser mayor a $0).';
     errorEl.hidden = false;
+    return;
+  }
+  if (!accessToken) {
+    // GitHub recibe los campos en su formulario oficial (sesión normal del propietario).
+    // No se envía ni se guarda ningún token en el navegador.
+    const url = new URL('https://github.com/' + REPO + '/issues/new');
+    url.searchParams.set('template', 'balance-movement.yml');
+    url.searchParams.set('title', '[Balance] Nuevo movimiento');
+    url.searchParams.set('tipo', type === 'charge' ? 'Cargo' : 'Abono');
+    url.searchParams.set('importe', (cents / 100).toFixed(2));
+    url.searchParams.set('fecha', date);
+    url.searchParams.set('concepto', concept);
+    if (note) url.searchParams.set('nota', note);
+    // La confirmación en GitHub genera un Issue y una Action guarda el movimiento.
+    window.location.assign(url.toString());
     return;
   }
   const now = new Date().toISOString();
