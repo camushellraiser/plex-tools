@@ -10,8 +10,8 @@
   <title>Balance compartido · Movimientos</title>
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="styles.css?v=3-minimal-signature">
-  <script src="app.js?v=1" defer></script>
+  <link rel="stylesheet" href="styles.css?v=4-github-entry">
+  <script src="app.js?v=2-github-entry" defer></script>
 </head>
 <body>
   <div class="site-shell">
@@ -48,7 +48,7 @@
       <section class="movements-section" aria-labelledby="movementsHeading">
         <div class="section-head">
           <div><div class="section-kicker">DETALLE DE MOVIMIENTOS</div><h2 id="movementsHeading">Historial <span id="movementCount" class="count-pill">0</span></h2><p class="section-description">Cada cargo y cada abono, ordenados por fecha.</p></div>
-          <div class="section-actions"><button class="btn btn-outline" type="button" id="exportBtn">↓ <span>Exportar CSV</span></button><button class="btn btn-primary admin-only" type="button" id="addBtn" hidden>＋ Nuevo movimiento</button></div>
+          <div class="section-actions"><button class="btn btn-outline" type="button" id="exportBtn">↓ <span>Exportar CSV</span></button><button class="btn btn-primary" type="button" id="addBtn">＋ Nuevo movimiento</button></div>
         </div>
         <div class="history-panel">
           <div class="toolbar">
@@ -87,7 +87,7 @@
   <dialog id="movementDialog" class="modal" aria-labelledby="movementTitle">
     <form id="movementForm" class="modal-layout">
       <div class="modal-head"><div class="modal-icon">＋</div><button class="close-btn" type="button" data-close="movementDialog" aria-label="Cerrar">×</button></div>
-      <p class="modal-kicker">REGISTRO DE MOVIMIENTO</p><h2 id="movementTitle">Nuevo movimiento</h2><p class="modal-subtitle">Registra un cargo que aumente el saldo o un abono que lo disminuya.</p>
+      <p class="modal-kicker">REGISTRO DE MOVIMIENTO</p><h2 id="movementTitle">Nuevo movimiento</h2><p class="modal-subtitle">Registra un cargo que aumente el saldo o un abono que lo disminuya.</p><div class="github-flow-hint" id="githubSaveHelp" hidden><strong>Sin token ni contraseñas nuevas.</strong> Al continuar, se abrirá tu sesión normal de GitHub para confirmar el registro. Solo tu cuenta puede incorporarlo al balance.</div>
       <div class="movement-type-picker" role="group" aria-label="Tipo de movimiento"><label class="type-option charge-option"><input name="type" type="radio" value="charge" checked><span>↗ &nbsp; Cargo</span></label><label class="type-option payment-option"><input name="type" type="radio" value="payment"><span>↙ &nbsp; Abono</span></label></div>
       <div class="fields-grid"><label class="field"><span>Cantidad (MXN)</span><input id="amountInput" name="amount" type="number" min="0.01" max="999999999" step="0.01" inputmode="decimal" placeholder="0.00" required></label><label class="field"><span>Fecha</span><input id="dateInput" name="date" type="date" required></label></div>
       <label class="field"><span>Concepto</span><input id="conceptInput" name="concept" type="text" maxlength="120" placeholder="Ej. Pago de colegiatura" required></label>
