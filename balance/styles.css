@@ -11,3 +11,9 @@
 @media (max-width:600px){.page-footer{flex-direction:row;align-items:center;gap:8px;margin-top:26px;padding:16px 0 22px}.author-signature{gap:8px}.author-monogram{width:30px;height:30px;font-size:14px}.author-credit-label{font-size:9px}.author-credit-name{font-size:11px}.signature-update{font-size:9px;max-width:44%}}
 @media(max-width:360px){.page-footer{flex-wrap:wrap}.signature-update{margin-left:38px;max-width:100%;text-align:left}}
 @media print{.page-footer{display:none!important}}
+
+
+/* Friendly GitHub confirmation before saving without a personal token */
+.github-flow-hint{display:block;border:1px solid #dcece4;border-radius:12px;padding:12px 14px;background:#f0f7f3;color:#688678;font-size:12px;line-height:1.6;margin:-1px 0 2px}
+.github-flow-hint strong{display:block;color:#26745d;font-size:12px;font-weight:750;margin-bottom:2px}
+.github-flow-hint[hidden]{display:none}
