@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=1.0.0" />
+  <link rel="stylesheet" href="styles.css?v=1.0.1" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" defer></script>
   <!-- Se reutiliza la configuracion publica del proyecto IP Pulse existente. -->
   <script src="../ip-pulse/config.js" defer></script>
@@ -107,7 +107,21 @@
           <p class="connection-info" id="connection-info">Consultando la IP privada del NAS en Supabase...</p>
         </section>
 
-        <footer><div><span class="footer-mark">▶</span> PLEX TOOLS <span class="footer-muted">/ TU SERVIDOR, TUS REGLAS</span></div><small>El acceso a Plex Analytics requiere conexión a la red local del NAS.</small></footer>
+        <footer class="site-footer">
+          <div class="footer-brand"><span class="footer-mark">▶</span> PLEX TOOLS <span class="footer-muted">/ TU SERVIDOR, TUS REGLAS</span></div>
+          <div class="footer-aside">
+            <small>El acceso a Plex Analytics requiere conexión a la red local del NAS.</small>
+            <div class="author-signature" aria-label="Developed by Aldo Lizares">
+              <span class="author-monogram" aria-hidden="true">
+                <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M7.4 27.3 14.8 12.6l7.4 14.7M10.2 21.7h9.1" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M25.1 12.8v14.5h8" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <span class="author-copy"><span class="author-prefix">Developed by</span><span class="author-name">Aldo Lizares</span></span>
+            </div>
+          </div>
+        </footer>
       </section>
     </main>
   </div>
