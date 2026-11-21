@@ -6,18 +6,28 @@ Panel financiero independiente, pensado para iPhone y público de solo lectura: 
 - **Publicación:** GitHub Pages del repositorio `camushellraiser/plex-tools`. No se modifica el sitio principal de Plex Tools.
 - **Datos:** GitHub Issue [#1](https://github.com/camushellraiser/plex-tools/issues/1). Se guarda ahí el registro JSON de movimientos y su número de revisión.
 - **Consulta:** cualquier visitante puede leer cargos, abonos y saldo neto, buscar conceptos, filtrar y exportar CSV sin autenticación.
-- **Edición:** únicamente con un **fine-grained personal access token** de GitHub, limitado al repositorio `plex-tools`, permiso **Issues → Read and write** y sin permiso de escritura de código. La clave se mantiene **solo en la memoria de la pestaña**, nunca en archivos del repositorio, localStorage ni almacenamiento de sesión. Cuando recargas, debes ingresar la clave otra vez.
+- **Alta de movimientos (sin token):** el botón **+ Nuevo movimiento** está siempre visible. Se llena el formulario en el dashboard; al continuar, GitHub abre un Issue con los datos precargados. El usuario `camushellraiser` confirma **Submit new issue** en su sesión habitual; una GitHub Action valida autor/importes y agrega el movimiento al JSON en el Issue #1. El workflow cierra el Issue de solicitud al finalizar. Solo las solicitudes de ese usuario se procesan.
+- **Edición y eliminación avanzada:** aún requieren un **fine-grained personal access token** con permiso **Issues → Read and write** del repositorio `plex-tools`. El token existe solo en memoria del navegador, no se guarda en archivos, localStorage ni almacenamiento de sesión.
 - **Importes:** MXN, cantidades almacenadas en centavos para evitar errores de coma flotante; cargos suman, abonos restan. El saldo puede ser negativo.
 - **Al guardar:** verifica la revisión actual de GitHub antes de sustituir el JSON, evitando sobreescrituras comunes desde dos pestañas.
 - **Sin servicios adicionales:** no requiere Supabase, Firebase, servidor, ni database aparte.
 
-## Crear el token (una vez)
+## Registrar cargos y abonos SIN token
+1. Entra a https://camushellraiser.github.io/plex-tools/balance/.
+2. Pulsa **+ Nuevo movimiento** y completa Cargo o Abono, cantidad, fecha y concepto.
+3. Pulsa **Continuar en GitHub**; inicia sesión en GitHub con `camushellraiser` si hace falta.
+4. Revisa los campos precargados y pulsa **Submit new issue** en GitHub.
+5. Después de que GitHub Actions procese la solicitud, regresa al dashboard y pulsa **Actualizar**.
+
+El acceso es exclusivo del propietario: cualquier otro usuario puede intentar crear un Issue, pero el workflow no guardará su movimiento. Esta alternativa funciona sin PAT, pero requiere la confirmación final dentro de GitHub y no es instantánea. El registro sigue siendo público.
+
+## Edición y borrado con token (opcional)
 1. Inicia sesión en GitHub y abre https://github.com/settings/personal-access-tokens/new.
 2. En **Resource owner**, selecciona tu propia cuenta.
 3. En **Repository access**, elige **Only select repositories** y selecciona `plex-tools`.
 4. En **Repository permissions**, agrega **Issues: Read and write**. No autorices **Contents: Read and write**, ni acceso a otros repositorios.
 5. Crea el token con una fecha de caducidad razonable. **No lo compartas ni lo envíes por WhatsApp o correo.**
-6. Entra en el dashboard, pulsa **Administrar**, pega el token y podrás cargar movimientos.
+6. Entra en el dashboard, pulsa **Editar / borrar**, pega el token y podrás modificar o eliminar movimientos. Para crear nuevos, no lo necesitas.
 
 La interfaz pública **no solicita token** para consultar.
 
