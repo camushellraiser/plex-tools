@@ -214,6 +214,10 @@ function personalToDb(r){return {id:r.id,user_id:state.user.id,merchant:r.mercha
 function personalFromDb(r){return normalize({id:r.id,merchant:r.merchant,amountCents:r.amount_cents,category:r.category,date:r.spent_on,note:r.note,payment:r.payment,createdAt:Number(r.created_at),updatedAt:Number(r.updated_at)})}
 async function loadPersonal(){if(!state.supa||!state.user)return;const {data,error}=await state.supa.from('personal_expenses').select('*').order('spent_on',{ascending:false});if(error)throw error;updateRecords((data||[]).map(personalFromDb).filter(Boolean));state.cloudError='';syncStatus()}
 async function initializeSupabase(){
+ $('auth-overlay').hidden=false;
+ $('auth-error').textContent='';
+ $('auth-submit').disabled=true;
+ $('auth-submit').textContent='Conectando…';
  try{
   await script('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js');
   state.supa=window.supabase.createClient(SUPA_CFG.url,SUPA_CFG.key,{auth:{persistSession:true,autoRefreshToken:true}});
@@ -230,8 +234,17 @@ async function initializeSupabase(){
    }catch(e){state.cloudError=niceError(e);$('auth-overlay').hidden=false;render()}
   },0)});
   const {data,error}=await state.supa.auth.getSession();if(error)throw error;
+  $('auth-submit').disabled=false;
+  $('auth-submit').textContent='Iniciar sesión →';
   if(!data.session)$('auth-overlay').hidden=false;
- }catch(e){state.cloudError=`Error en Supabase: ${niceError(e)}`;syncStatus();toast('No se pudo iniciar la nube. Consulta la guía de configuración.');}
+ }catch(e){
+  state.cloudError=`No se pudo cargar el acceso seguro: ${niceError(e)}`;
+  $('auth-overlay').hidden=false;
+  $('auth-error').textContent='No se pudo conectar con Supabase. Comprueba tu conexión y vuelve a abrir la página.';
+  $('auth-submit').disabled=true;
+  $('auth-submit').textContent='Reintenta al recargar';
+  syncStatus();
+ }
 }
 function clearPhotoUrls(){for(const u of state.photoUrls)URL.revokeObjectURL(u);state.photoUrls=[]}
 async function renderPersonalPhotos(){
