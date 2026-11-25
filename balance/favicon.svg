@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Balance Compartido: balanza y movimientos de dinero">
+ <defs>
+  <linearGradient id="bg" x1="0" x2="1" y1="1" y2="0">
+   <stop stop-color="#092b2c"/><stop offset=".51" stop-color="#0e5149"/><stop offset="1" stop-color="#16846b"/>
+  </linearGradient>
+  <radialGradient id="glow" cx=".86" cy=".08" r=".85"><stop stop-color="#5de4bb" stop-opacity=".29"/><stop offset="1" stop-color="#5de4bb" stop-opacity="0"/></radialGradient>
+  <linearGradient id="gold" x1=".07" x2=".88" y1="0" y2="1">
+   <stop stop-color="#fff0be"/><stop offset=".3" stop-color="#e7bf73"/><stop offset=".62" stop-color="#fce9b4"/><stop offset="1" stop-color="#bc8b47"/>
+  </linearGradient>
+  <linearGradient id="goldDark" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#ffedbb"/><stop offset="1" stop-color="#d8aa60"/></linearGradient>
+  <filter id="shadow" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur stdDeviation="5"/></filter>
+ </defs>
+ <rect width="512" height="512" fill="url(#bg)"/>
+ <rect width="512" height="512" fill="url(#glow)"/>
+ <path d="M-10 372 C96 262 138 106 365 -18" fill="none" stroke="#a0f4d1" stroke-opacity=".13" stroke-width="2"/>
+ <path d="M510 110 C410 50 342 76 271 141" fill="none" stroke="#d2ffdf" stroke-opacity=".08" stroke-width="55"/>
+ <path d="M98 253 C121 158 192 98 288 99 C343 99 394 120 425 161" fill="none" stroke="#042922" stroke-opacity=".5" stroke-width="18" stroke-linecap="round" filter="url(#shadow)"/>
+ <path d="M98 253 C121 158 192 98 288 99 C343 99 394 120 425 161" fill="none" stroke="url(#gold)" stroke-width="16" stroke-linecap="round"/>
+ <path d="M419 130 L438 187 L380 174 Z" fill="url(#goldDark)"/>
+ <path d="M417 130 L438 187" fill="none" stroke="#ffefc0" stroke-opacity=".3" stroke-width="2"/>
+ <path d="M415 271 C392 364 320 414 230 414 C164 414 110 390 76 351" fill="none" stroke="#042922" stroke-opacity=".5" stroke-width="18" stroke-linecap="round" filter="url(#shadow)"/>
+ <path d="M415 271 C392 364 320 414 230 414 C164 414 110 390 76 351" fill="none" stroke="url(#gold)" stroke-width="16" stroke-linecap="round"/>
+ <path d="M93 385 L61 328 L119 338 Z" fill="url(#goldDark)"/>
+ <path d="M254 180 L254 325" fill="none" stroke="#134f45" stroke-opacity=".7" stroke-width="25" stroke-linecap="round"/>
+ <path d="M254 180 L254 325" fill="none" stroke="url(#gold)" stroke-width="17" stroke-linecap="round"/>
+ <path d="M129 201 Q192 219 254 196 Q319 219 382 201" fill="none" stroke="#083a35" stroke-opacity=".35" stroke-width="21" stroke-linecap="round"/>
+ <path d="M129 201 Q192 219 254 196 Q319 219 382 201" fill="none" stroke="url(#goldDark)" stroke-width="14" stroke-linecap="round"/>
+ <circle cx="254" cy="190" r="18" fill="#fff0be" stroke="#af8448" stroke-width="4"/>
+ <circle cx="129" cy="201" r="11" fill="#ffefbd"/>
+ <circle cx="382" cy="201" r="11" fill="#ffefbd"/>
+ <path d="M129 209 L95 289 M129 209 L163 289 M382 209 L348 289 M382 209 L416 289" fill="none" stroke="#f5d89c" stroke-width="6" stroke-linecap="round"/>
+ <path d="M90 285 H168 Q167 318 129 318 Q91 318 90 285Z" fill="url(#gold)"/>
+ <path d="M343 285 H421 Q420 318 382 318 Q344 318 343 285Z" fill="url(#gold)"/>
+ <path d="M90 285 H168 M343 285 H421" fill="none" stroke="#fff2c4" stroke-width="6" stroke-linecap="round"/>
+ <ellipse cx="128" cy="273" rx="18" ry="5.5" fill="#fff2c7"/>
+ <path d="M110 273 V260 Q128 271 146 260 V273 M110 260 V247 Q128 258 146 247 V260" fill="none" stroke="#fff2c7" stroke-width="6"/>
+ <rect x="363" y="260" width="10" height="17" rx="1" fill="#fff2c7"/>
+ <rect x="377" y="252" width="10" height="25" rx="1" fill="#fff2c7"/>
+ <rect x="391" y="244" width="10" height="33" rx="1" fill="#fff2c7"/>
+ <path d="M225 326 H283 M208 337 H300" fill="none" stroke="url(#goldDark)" stroke-width="15" stroke-linecap="round"/>
+ <path d="M235 331 L216 342 H292 L273 331" fill="url(#goldDark)"/>
+ <path d="M251 143 l5 9 10 5 -10 5 -5 9 -5 -9 -10 -5 10 -5Z" fill="#ffdf9d" opacity=".92"/>
+</svg>
