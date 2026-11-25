@@ -61,6 +61,22 @@
 .expense-amount small{color:var(--muted);font-size:10px;font-weight:600;white-space:nowrap}
 @media(max-width:400px){.amount-field #currency{flex-basis:72px;min-width:72px;width:72px}.expense-amount strong{font-size:13px}.expense-amount small{font-size:9px}}
 
+
+/* iPhone horizontal viewport integrity — isolate page-width from intrinsic content. */
+html,body{max-width:100%;overflow-x:hidden;overscroll-behavior-x:none}
+.app-shell{width:100%;min-width:0;max-width:1040px}
+.app-shell>.view,.app-shell>main,main,.view,.recent-section,.panel,.hero{min-width:0;max-width:100%}
+.insight-grid,.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.hero-bottom{grid-template-columns:repeat(3,minmax(0,1fr))}
+.hero-bottom>div,.section-title-row>div,.panel-header>div{min-width:0}
+.hero-mini-label{overflow-wrap:anywhere}
+@media(max-width:759px){
+ .modal-backdrop{inset:0;max-width:100vw;width:100%;margin:0;overflow-x:hidden}
+ .modal-backdrop>.modal{width:100%;max-width:535px;min-width:0;flex:0 1 535px;margin:0 auto;overflow-x:hidden;overscroll-behavior:contain}
+ .bottom-nav{max-width:100%;box-sizing:border-box}
+ .app-shell{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+}
+
 </style>
   <title>TravelSpend · San Diego</title>
 </head>
@@ -399,8 +415,25 @@ async function prepareExpenseFX(){
  }
 }
 
-function openModal(id=null){const rec=id?state.records.find(x=>x.id===id):null;state.editingId=rec?.id||null;state.kind=rec?.amountCents<0?'refund':'expense';$('modal-title').textContent=rec?'Editar movimiento':'Nuevo gasto';$('amount').value=rec?(Math.abs(rec.originalAmountCents??rec.amountCents)/100).toFixed(2):'';$('currency').value=rec?.currency==='MXN'?'MXN':'USD';$('merchant').value=rec?.merchant||'';$('category').value=rec?.category||'shopping';$('payment').value=rec?.cardName||rec?.payment||'card';$('card-migration-hint').hidden=!(state.supaEnabled&&state.cardColumnReady===false);$('date').value=rec?.date||todayISO();$('note').value=rec?.note||'';$('delete-expense').hidden=!rec;$('ocr-status').textContent='Opcional · Revisa el resultado';$('ocr-preview').hidden=true;$('ocr-preview').textContent='';$('receipt-file').value='';$('receipt-gallery').value='';state.pendingPhotos=[];getPersonalPhotos(rec?.id||null).catch(e=>toast('No se pudieron cargar fotos: '+niceError(e)));updateKind();$('modal-backdrop').hidden=false;document.body.style.overflow='hidden';prepareExpenseFX().catch(e=>toast(niceError(e)))}
-function closeModal(){state.formFxSeq++;$('modal-backdrop').hidden=true;document.body.style.overflow='';state.photos=[];state.pendingPhotos=[];clearPhotoUrls()}
+function recenterTravelSpend(){
+  const scroller=document.scrollingElement||document.documentElement;
+  if(scroller)scroller.scrollLeft=0;
+  document.body.scrollLeft=0;
+  if(window.scrollX>0)window.scrollTo({left:0,top:window.scrollY,behavior:'instant'});
+}
+function openModal(id=null){
+  if(document.activeElement&&document.activeElement!==document.body&&typeof document.activeElement.blur==='function')document.activeElement.blur();
+  recenterTravelSpend();const rec=id?state.records.find(x=>x.id===id):null;state.editingId=rec?.id||null;state.kind=rec?.amountCents<0?'refund':'expense';$('modal-title').textContent=rec?'Editar movimiento':'Nuevo gasto';$('amount').value=rec?(Math.abs(rec.originalAmountCents??rec.amountCents)/100).toFixed(2):'';$('currency').value=rec?.currency==='MXN'?'MXN':'USD';$('merchant').value=rec?.merchant||'';$('category').value=rec?.category||'shopping';$('payment').value=rec?.cardName||rec?.payment||'card';$('card-migration-hint').hidden=!(state.supaEnabled&&state.cardColumnReady===false);$('date').value=rec?.date||todayISO();$('note').value=rec?.note||'';$('delete-expense').hidden=!rec;$('ocr-status').textContent='Opcional · Revisa el resultado';$('ocr-preview').hidden=true;$('ocr-preview').textContent='';$('receipt-file').value='';$('receipt-gallery').value='';state.pendingPhotos=[];getPersonalPhotos(rec?.id||null).catch(e=>toast('No se pudieron cargar fotos: '+niceError(e)));updateKind();$('modal-backdrop').hidden=false;document.body.style.overflow='hidden';$('modal-backdrop').querySelector('.modal').scrollTop=0;prepareExpenseFX().catch(e=>toast(niceError(e)))}
+function closeModal(){
+  state.formFxSeq++;
+  const active=document.activeElement;
+  if(active&&$('modal-backdrop').contains(active)&&typeof active.blur==='function')active.blur();
+  $('modal-backdrop').hidden=true;
+  document.body.style.overflow='';
+  state.photos=[];state.pendingPhotos=[];clearPhotoUrls();
+  recenterTravelSpend();
+  requestAnimationFrame(recenterTravelSpend);
+}
 function updateKind(){document.querySelectorAll('.kind-choice').forEach(b=>b.classList.toggle('active',b.dataset.kind===state.kind));}
 function centsFromInput(s){const clean=String(s).replace(/\s/g,'').replace(',','.');if(!/^\d{1,8}(?:\.\d{1,2})?$/.test(clean))return null;const [whole,part='']=clean.split('.');const cents=Number(whole)*100+Number(part.padEnd(2,'0'));return cents>0&&cents<=100000000?cents:null}
 async function saveExpense(ev){
