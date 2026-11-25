@@ -1,0 +1,47 @@
+name: Balance icon assets (temporary build)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'balance/favicon.svg'
+      - '.github/workflows/balance-icon-assets.yml'
+permissions:
+  contents: write
+jobs:
+  rasterize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Install SVG rasterizer
+        run: python -m pip install --disable-pip-version-check cairosvg==2.7.1
+      - name: Render official iOS / PWA icon sizes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import cairosvg
+          source = Path('balance/favicon.svg')
+          for name,size in [('apple-touch-icon.png',180),('icon-192.png',192),('icon-512.png',512)]:
+              target = Path('balance') / name
+              cairosvg.svg2png(url=str(source), write_to=str(target), output_width=size, output_height=size)
+              print(target, size, target.stat().st_size)
+          PY
+      - name: Commit icon PNG files
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add balance/apple-touch-icon.png balance/icon-192.png balance/icon-512.png
+          if git diff --cached --quiet; then
+            echo 'Assets already up to date'
+            exit 0
+          fi
+          git commit -m 'assets(balance): add 180 192 512 premium icon PNGs'
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 2
+          done
+          echo 'Unable to publish icon assets' >&2
+          exit 1
